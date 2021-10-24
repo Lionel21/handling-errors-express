@@ -6,6 +6,6 @@ content-type: application/json
     "city": "Londres",
     "skills":[
         {"title":"english", "votes": 15},
-        {"title":"mongo", "votes": 12}
+        {"title":"mongo", "votes": 15}
     ]
 }
