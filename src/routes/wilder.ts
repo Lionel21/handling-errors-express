@@ -3,6 +3,7 @@ import InputError from '../errors/InputError';
 import WilderModel from '../models/Wilder';
 import {body, validationResult} from "express-validator";
 import asyncHandler from "express-async-handler";
+import BadRequestError from "../errors/BadRequestError";
 
 const controller =  {
   create: async (req: Request, res: Response): Promise<void> => {
@@ -12,6 +13,12 @@ const controller =  {
       throw new InputError(errorResult.array());
     }
     await WilderModel.init();
+    const wilderWithSameName = await WilderModel.findOne({
+      name: req.body.name
+    });
+    if (wilderWithSameName) {
+      throw new BadRequestError(`A wilder with the name ${req.body.name} already exists`);
+    }
     const wilder = new WilderModel(req.body);
     const result = await wilder.save();
     res.json({ success: true, result });

@@ -4,6 +4,7 @@ import cors from 'cors';
 import wilderRouter from './routes/wilder';
 import InputError from './errors/InputError';
 import NotFoundError from "./errors/NotFoundError";
+import BadRequestError from "./errors/BadRequestError";
 
 const app = express();
 
@@ -49,17 +50,13 @@ function isMongoError(error: Error): error is MongoError {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((error: Error, req: Request, res: Response, _next: NextFunction) => {
     // TODO : do not rely on mongo error
-    // if (isMongoError(error)) {
-    //     switch (error.code) {
-    //         case 11000:
-    //             res.status(400);
-    //             res.json({success: false, message: 'The name is already used'});
-    //             break;
-    //         default:
-    //             res.status(400);
-    //             res.json({success: false, message: 'An error occured'});
-    //     }
-    // }
+    if (error instanceof BadRequestError) {
+        return res.status(400).json({
+            status: 400,
+            errors: [error.message]
+        });
+    }
+
     // TODO : use a better validation method (express-validator)
     if (error instanceof InputError) {
         return res.status(400).json({
@@ -76,7 +73,6 @@ app.use((error: Error, req: Request, res: Response, _next: NextFunction) => {
         })
     }
     console.error(error);
-
     return res.status(500).json({
         status: 500,
         errors: ['Something went wrong']
