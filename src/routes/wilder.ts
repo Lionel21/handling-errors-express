@@ -1,9 +1,10 @@
-import { Request, Response } from 'express';
+import { Request, Response, Router } from 'express';
 import InputError from '../errors/InputError';
 import WilderModel from '../models/Wilder';
-import {validationResult} from "express-validator";
+import {body, validationResult} from "express-validator";
+import asyncHandler from "express-async-handler";
 
-export default {
+const controller =  {
   create: async (req: Request, res: Response): Promise<void> => {
     const errorResult = validationResult(req); // Sending back errors
     if (!errorResult.isEmpty()) {
@@ -30,3 +31,24 @@ export default {
     res.json({ success: true, result });
   },
 };
+
+const router = Router();
+
+router.route('/api/wilders')
+    .post(  [
+      body('name')
+          .isLength({ min: 3 })
+          .withMessage('Name must be at least 3 characters'),
+      body('city').isString().withMessage('City must be a string'),
+      body('skills.*.title')
+          .isLength({ min: 2 })
+          .withMessage('SKill title must be at least 2 characters.'),
+      body('skills.*.vote')
+          .isInt({ min: 0 })
+          .withMessage('Skill votes must be an integer greater of equal to 0'),
+    ], asyncHandler(controller.create))
+    .get(asyncHandler(controller.read))
+    .put(asyncHandler(controller.update))
+    .delete(asyncHandler(controller.delete));
+
+export default router;

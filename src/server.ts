@@ -1,10 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
-import asyncHandler from 'express-async-handler';
 import cors from 'cors';
-
-import { body } from 'express-validator';
-import wilderController from './controllers/wilder';
+import wilderRouter from './routes/wilder';
 import InputError from './errors/InputError';
 
 const app = express();
@@ -31,25 +28,8 @@ app.get('/', (req, res) => {
   res.send('Hello World');
 });
 
-app.post(
-  '/api/wilders',
-  [
-    body('name')
-      .isLength({ min: 3 })
-      .withMessage('Name must be at least 3 characters'),
-    body('city').isString().withMessage('City must be a string'),
-    body('skills.*.title')
-      .isLength({ min: 2 })
-      .withMessage('SKill title must be at least 2 characters.'),
-    body('skills.*.vote')
-      .isInt({ min: 0 })
-      .withMessage('Skill votes must be an integer greater of equal to 0'),
-  ],
-  asyncHandler(wilderController.create)
-);
-app.get('/api/wilders', asyncHandler(wilderController.read));
-app.put('/api/wilders', asyncHandler(wilderController.update));
-app.delete('/api/wilders', asyncHandler(wilderController.delete));
+app.use(wilderRouter);
+
 
 // TODO : handle not found in the error middleware
 app.get('*', (req, res) => {
