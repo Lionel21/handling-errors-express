@@ -43,7 +43,7 @@ router.route('/api/wilders')
       body('skills.*.title')
           .isLength({ min: 2 })
           .withMessage('SKill title must be at least 2 characters.'),
-      body('skills.*.vote')
+      body('skills.*.votes')
           .isInt({ min: 0 })
           .withMessage('Skill votes must be an integer greater of equal to 0'),
     ], asyncHandler(controller.create))

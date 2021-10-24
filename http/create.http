@@ -2,10 +2,10 @@ POST http://localhost:5000/api/wilders HTTP/1.1
 content-type: application/json
 
 {
-    "name":"H",
+    "name":"Lionel Delamare",
     "city": "Londres",
     "skills":[
-        {"title":"e", "votes": -5},
-        {"title":"mongo", "votes":"12UU"}
+        {"title":"english", "votes": 15},
+        {"title":"mongo", "votes": 12}
     ]
-} 
+}
