@@ -49,20 +49,20 @@ function isMongoError(error: Error): error is MongoError {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((error: Error, req: Request, res: Response, _next: NextFunction) => {
     // TODO : do not rely on mongo error
-    if (isMongoError(error)) {
-        switch (error.code) {
-            case 11000:
-                res.status(400);
-                res.json({success: false, message: 'The name is already used'});
-                break;
-            default:
-                res.status(400);
-                res.json({success: false, message: 'An error occured'});
-        }
-    }
+    // if (isMongoError(error)) {
+    //     switch (error.code) {
+    //         case 11000:
+    //             res.status(400);
+    //             res.json({success: false, message: 'The name is already used'});
+    //             break;
+    //         default:
+    //             res.status(400);
+    //             res.json({success: false, message: 'An error occured'});
+    //     }
+    // }
     // TODO : use a better validation method (express-validator)
     if (error instanceof InputError) {
-        res.status(400).json({
+        return res.status(400).json({
             status: 400,
             errors: error.validationErrors.map(
                 ({msg}) => msg
@@ -70,11 +70,17 @@ app.use((error: Error, req: Request, res: Response, _next: NextFunction) => {
         });
     }
     if (error instanceof  NotFoundError) {
-        res.status(404).json({
+        return res.status(404).json({
             status: 404,
             errors: ['Ressource not found']
         })
     }
+    console.error(error);
+
+    return res.status(500).json({
+        status: 500,
+        errors: ['Something went wrong']
+    })
 });
 
 // Start Server
